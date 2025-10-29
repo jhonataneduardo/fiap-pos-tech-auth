@@ -367,42 +367,6 @@ A documentação interativa (Swagger) está disponível em:
 ```
 http://localhost:3002/api-docs
 ```
-
----
-
-## Testes
-
-### Executar testes
-
-```bash
-npm test
-```
-
-### Executar testes em watch mode
-
-```bash
-npm run test:watch
-```
-
-### Executar testes com coverage
-
-```bash
-npm run test:coverage
-```
-
----
-
-## Scripts Disponíveis
-
-```bash
-npm run dev          # Inicia servidor de desenvolvimento com hot reload
-npm run build        # Compila TypeScript para JavaScript
-npm start            # Inicia servidor de produção
-npm test             # Executa testes
-npm run lint         # Verifica problemas no código
-npm run lint:fix     # Corrige problemas automaticamente
-```
-
 ---
 
 ## Estrutura do Projeto
@@ -536,22 +500,6 @@ fiap-pos-tech-auth/
    - Presenters para formatação de respostas
    - Integrações externas (Keycloak, databases, etc.)
 
-**Fluxo de Dados:**
-
-```
-HTTP Request → Routes → API Controller → Use Case → Repository → Keycloak
-                ↓                          ↓            ↓
-            Middleware              Business Logic   External Service
-                ↓                          ↓            ↓
-         Validation              Domain Entities   API Calls
-                                        ↓
-                                   Presenter
-                                        ↓
-                                 HTTP Response
-```
-
----
-
 ## Variáveis de Ambiente
 
 | Variável | Descrição | Padrão |
@@ -568,47 +516,7 @@ HTTP Request → Routes → API Controller → Use Case → Repository → Keycl
 
 ---
 
-## Troubleshooting
-
-### Keycloak não inicia
-
-- Verifique se a porta 8080 está disponível
-- Aguarde ~60 segundos para inicialização completa
-- Verifique logs: `docker-compose logs keycloak`
-
-### Erro "Failed to authenticate admin client"
-
-- Verifique se o Keycloak está rodando
-- Confirme as credenciais de admin no `.env`
-
-### Erro "Invalid client credentials"
-
-- Verifique se o `KEYCLOAK_CLIENT_SECRET` está correto
-- Regenere o secret no Keycloak Admin Console
-
-### Porta 3002 já em uso
-
-- Altere a variável `PORT` no `.env`
-- Ou encerre o processo usando a porta: `lsof -ti:3002 | xargs kill -9`
-
----
-
-## Contribuindo
-
-1. Faça fork do projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
-
----
-
 ## Licença
 
 Este projeto é parte do curso de Pós-Graduação da FIAP.
 
----
-
-## Suporte
-
-Para dúvidas ou problemas, abra uma issue no repositório.
