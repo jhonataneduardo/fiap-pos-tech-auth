@@ -1,0 +1,67 @@
+name: CI - Continuous Integration
+
+on:
+  pull_request:
+    branches:
+      - master
+      - develop
+      - 'feature/**'
+      - 'bugfix/**'
+      - 'hotfix/**'
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.gitignore'
+
+  # Permite execução manual do workflow
+  workflow_dispatch:
+
+# Cancela execuções anteriores do mesmo workflow para o mesmo PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Job 1: Testes automatizados
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Install test dependencies
+        run: yarn add -D jest ts-jest @types/jest
+
+      - name: Run tests
+        run: npx jest --ci --coverage --maxWorkers=2 --passWithNoTests
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v4
+        if: always()
+        with:
+          files: ./coverage/coverage-final.json
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Archive test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: |
+            coverage/
+            jest-report.xml
+          retention-days: 7
