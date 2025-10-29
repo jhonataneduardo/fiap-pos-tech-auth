@@ -28,26 +28,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
-    # Service container para PostgreSQL
-    services:
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_USER: testuser
-          POSTGRES_PASSWORD: testpass
-          POSTGRES_DB: testdb
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-
-    env:
-      DATABASE_URL: postgresql://testuser:testpass@localhost:5432/testdb
-      NODE_ENV: test
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -62,12 +42,6 @@ jobs:
 
       - name: Install test dependencies
         run: yarn add -D jest ts-jest @types/jest
-
-      - name: Generate Prisma Client
-        run: npx prisma generate --schema prisma/schema.prisma
-
-      - name: Run Prisma migrations
-        run: npx prisma migrate deploy --schema prisma/schema.prisma
 
       - name: Run tests
         run: npx jest --ci --coverage --maxWorkers=2 --passWithNoTests
