@@ -3,11 +3,11 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express';
-import swaggerJsdoc from 'swagger-jsdoc';
 import config from '@/config/index';
 import { setupDependencies } from '@/core/infrastructure/di/setup';
 import router from '@/core/infrastructure/http/routes';
 import { errorHandler, notFoundHandler } from '@/core/infrastructure/http/middlewares/error-handler';
+import { swaggerSpec } from '@/core/infrastructure/swagger';
 
 class App {
   public app: Application;
@@ -55,61 +55,13 @@ class App {
   }
 
   private configureSwagger(): void {
-    const swaggerOptions = {
-      definition: {
-        openapi: '3.0.0',
-        info: {
-          title: 'FIAP Pós-Tech - Auth Service API',
-          version: '1.0.0',
-          description: 'API de autenticação e autorização com Keycloak - Clean Architecture',
-          contact: {
-            name: 'FIAP Pós-Tech',
-          },
-        },
-        servers: [
-          {
-            url: `http://localhost:${config.port}`,
-            description: 'Servidor de desenvolvimento',
-          },
-        ],
-        components: {
-          schemas: {
-            Error: {
-              type: 'object',
-              properties: {
-                success: {
-                  type: 'boolean',
-                  example: false,
-                },
-                error: {
-                  type: 'object',
-                  properties: {
-                    code: {
-                      type: 'string',
-                      example: 'VALIDATION_ERROR',
-                    },
-                    message: {
-                      type: 'string',
-                      example: 'Erro de validação',
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      apis: ['./src/modules/**/infrastructure/http/*.ts'],
-    };
-
-    const swaggerSpec = swaggerJsdoc(swaggerOptions);
-
     this.app.use(
       '/api-docs',
       swaggerUi.serve,
       swaggerUi.setup(swaggerSpec, {
+        explorer: true,
         customCss: '.swagger-ui .topbar { display: none }',
-        customSiteTitle: 'Auth Service API Documentation - Clean Architecture',
+        customSiteTitle: 'FIAP Pos Tech Auth API Documentation'
       })
     );
   }
