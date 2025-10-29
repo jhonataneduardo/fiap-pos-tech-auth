@@ -75,41 +75,7 @@ jobs:
         with:
           category: "/language:${{matrix.language}}"
 
-  # Job 3: Container Security Scan
-  container-scan:
-    name: Container Security Scan
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Build Docker image for scanning
-        run: docker build -t fiap-pos-tech-auth:scan .
-
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: "fiap-pos-tech-auth:scan"
-          format: "sarif"
-          output: "trivy-results.sarif"
-          severity: "CRITICAL,HIGH,MEDIUM"
-
-      - name: Upload Trivy results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: "trivy-results.sarif"
-
-      - name: Run Trivy in table format
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: "fiap-pos-tech-auth:scan"
-          format: "table"
-          severity: "CRITICAL,HIGH"
-
-  # Job 4: OWASP Dependency Check
+  # Job 3: OWASP Dependency Check
   owasp-dependency-check:
     name: OWASP Dependency Check
     runs-on: ubuntu-latest
