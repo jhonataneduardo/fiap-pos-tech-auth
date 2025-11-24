@@ -147,7 +147,67 @@ Ao subir o Docker Compose, o Keycloak será configurado automaticamente com:
 
 ---
 
+---
+
+## 🐳 Início Rápido com Docker Compose
+
+Este repositório inclui um `docker-compose.yml` independente para executar a pilha de autenticação completa de forma isolada.
+
+### Pré-requisitos
+- Docker e Docker Compose instalados
+
+### Configuração do Ambiente
+
+1. **Copie o arquivo de ambiente**:
+```bash
+cp .env.example .env
+```
+
+2. **Inicie os serviços**:
+
+**Modo Desenvolvimento** (serviço de autenticação com hot-reload):
+```bash
+docker compose --profile dev up -d
+```
+Acesse o Serviço de Auth: http://localhost:3002
+Acesse o Admin do Keycloak: http://localhost:8080
+
+**Modo Produção** (build otimizado):
+```bash
+docker compose --profile prd up -d --build
+```
+Acesse o Serviço de Auth: http://localhost:3003
+Acesse o Admin do Keycloak: http://localhost:8080
+
+### Serviços Incluídos
+
+- **Keycloak** (porta 8080) - Gestão de Identidade e Acesso
+- **PostgreSQL** (interno) - Banco de dados do Keycloak
+- **Auth Service Dev** (porta 3002) - Modo de desenvolvimento com hot-reload
+- **Auth Service Prod** (porta 3003) - Build otimizado para produção
+
+### Comandos Rápidos
+
+```bash
+# Ver logs
+docker compose logs -f fiap-pos-tech-auth-dev  # ou fiap-pos-tech-auth-prd
+
+# Acessar Console Admin do Keycloak
+open http://localhost:8080
+# Login: admin / admin
+
+# Parar serviços
+docker compose --profile dev down
+docker compose --profile prd down
+
+# Remover todos os dados (incluindo banco de dados do Keycloak)
+docker compose down -v
+```
+
+---
+
 ## Executando o Projeto
+
 
 ### Com Docker (Recomendado)
 
