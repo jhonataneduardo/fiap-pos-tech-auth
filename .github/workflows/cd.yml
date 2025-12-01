@@ -85,32 +85,57 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Mock - Setup Test Environment
-        run: |
-          echo "🧪 [MOCK] Setting up test environment..."
-          echo "✅ [MOCK] PostgreSQL service would be started here"
-          echo "✅ [MOCK] Database URL: postgresql://testuser:testpass@localhost:5432/testdb"
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
 
-      - name: Mock - Install Dependencies
-        run: |
-          echo "📦 [MOCK] Installing dependencies..."
-          echo "✅ [MOCK] Dependencies installed successfully"
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Mock - Generate Prisma Client
-        run: |
-          echo "🔧 [MOCK] Generating Prisma Client..."
-          echo "✅ [MOCK] Prisma Client generated"
+      - name: Run unit tests with coverage
+        run: npm run test:coverage
+        env:
+          CI: true
 
-      - name: Mock - Run Migrations
+      - name: Verify coverage thresholds (80%)
         run: |
-          echo "🗄️ [MOCK] Running database migrations..."
-          echo "✅ [MOCK] Migrations applied successfully"
+          echo "🔍 Validating coverage meets 80% threshold..."
+          npm run test:coverage -- --coverageThreshold='{"global":{"branches":80,"functions":80,"lines":80,"statements":80}}'
 
-      - name: Mock - Run Tests
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        if: always()
+        with:
+          files: ./coverage/lcov.info
+          flags: unittests-cd
+          name: codecov-cd-${{ needs.setup.outputs.environment }}
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Archive coverage results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report-cd-${{ needs.setup.outputs.version }}
+          path: coverage/
+          retention-days: 30
+
+      - name: Generate test summary
+        if: always()
         run: |
-          echo "🧪 [MOCK] Running tests with coverage..."
-          echo "✅ [MOCK] All tests passed (0 tests executed - no tests found)"
-          echo "✅ [MOCK] Coverage: 0% (no test files)"
+          echo "## 🧪 Test Results Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** ${{ needs.setup.outputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Version:** ${{ needs.setup.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f coverage/coverage-summary.json ]; then
+            echo "### Coverage Summary" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`json" >> $GITHUB_STEP_SUMMARY
+            cat coverage/coverage-summary.json >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          fi
 
   # Job 3: Build e Push Docker Image
   build-and-push:

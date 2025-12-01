@@ -36,23 +36,39 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: yarn install
+        run: npm ci
 
-      - name: Install test dependencies
-        run: yarn add -D jest ts-jest @types/jest
+      - name: Run unit tests with coverage
+        run: npm run test:coverage
+        env:
+          CI: true
 
-      - name: Run tests
-        run: npx jest --ci --coverage --maxWorkers=2 --passWithNoTests
+      - name: Verify coverage thresholds (80%)
+        run: |
+          echo "🔍 Validating coverage meets 80% threshold for all metrics..."
+          npm run test:coverage -- --coverageThreshold='{"global":{"branches":80,"functions":80,"lines":80,"statements":80}}'
 
-      - name: Upload coverage reports
+      - name: Display coverage summary
+        if: always()
+        run: |
+          echo "📊 Coverage Summary:"
+          if [ -f coverage/lcov-report/index.html ]; then
+            echo "✅ HTML coverage report generated"
+          fi
+          if [ -f coverage/lcov.info ]; then
+            echo "✅ LCOV coverage report generated"
+          fi
+
+      - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         if: always()
         with:
-          files: ./coverage/coverage-final.json
-          flags: unittests
-          name: codecov-umbrella
+          files: ./coverage/lcov.info
+          flags: unittests-ci
+          name: codecov-ci-pr-${{ github.event.pull_request.number }}
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
 
@@ -60,8 +76,35 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: test-results
+          name: test-results-pr-${{ github.event.pull_request.number || github.run_number }}
           path: |
             coverage/
             jest-report.xml
-          retention-days: 7
+          retention-days: 14
+
+      - name: Comment PR with coverage
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            if (fs.existsSync('coverage/coverage-summary.json')) {
+              const coverage = JSON.parse(fs.readFileSync('coverage/coverage-summary.json', 'utf8'));
+              const total = coverage.total;
+              
+              const comment = `## 🧪 Test Coverage Report\n\n` +
+                `| Metric | Coverage | Status |\n` +
+                `|--------|----------|--------|\n` +
+                `| 🌿 Branches | ${total.branches.pct}% | ${total.branches.pct >= 80 ? '✅' : '❌'} |\n` +
+                `| 🔧 Functions | ${total.functions.pct}% | ${total.functions.pct >= 80 ? '✅' : '❌'} |\n` +
+                `| 📝 Lines | ${total.lines.pct}% | ${total.lines.pct >= 80 ? '✅' : '❌'} |\n` +
+                `| 📄 Statements | ${total.statements.pct}% | ${total.statements.pct >= 80 ? '✅' : '❌'} |\n\n` +
+                `**Threshold:** 80% for all metrics`;
+              
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            }
