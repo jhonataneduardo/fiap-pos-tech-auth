@@ -1,0 +1,107 @@
+{
+    "id": "fiap-pos-tech",
+    "realm": "fiap-pos-tech",
+    "displayName": "FIAP Pós-Tech Autenticação",
+    "enabled": true,
+    "sslRequired": "external",
+    "registrationAllowed": false,
+    "loginWithEmailAllowed": true,
+    "duplicateEmailsAllowed": false,
+    "resetPasswordAllowed": true,
+    "editUsernameAllowed": false,
+    "bruteForceProtected": true,
+    "permanentLockout": false,
+    "maxFailureWaitSeconds": 900,
+    "minimumQuickLoginWaitSeconds": 60,
+    "waitIncrementSeconds": 60,
+    "quickLoginCheckMilliSeconds": 1000,
+    "maxDeltaTimeSeconds": 43200,
+    "failureFactor": 5,
+    "defaultSignatureAlgorithm": "RS256",
+    "offlineSessionMaxLifespanEnabled": false,
+    "offlineSessionMaxLifespan": 5184000,
+    "clientSessionIdleTimeout": 0,
+    "clientSessionMaxLifespan": 0,
+    "clientOfflineSessionIdleTimeout": 0,
+    "clientOfflineSessionMaxLifespan": 0,
+    "accessTokenLifespan": 300,
+    "accessTokenLifespanForImplicitFlow": 900,
+    "ssoSessionIdleTimeout": 1800,
+    "ssoSessionMaxLifespan": 36000,
+    "ssoSessionIdleTimeoutRememberMe": 0,
+    "ssoSessionMaxLifespanRememberMe": 0,
+    "accessCodeLifespan": 60,
+    "accessCodeLifespanUserAction": 300,
+    "accessCodeLifespanLogin": 1800,
+    "actionTokenGeneratedByAdminLifespan": 43200,
+    "actionTokenGeneratedByUserLifespan": 300,
+    "oauth2DeviceCodeLifespan": 600,
+    "oauth2DevicePollingInterval": 5,
+    "clients": [
+        {
+            "clientId": "pos-tech-api",
+            "name": "POS Tech API Client",
+            "description": "Cliente para autenticação da API",
+            "enabled": true,
+            "clientAuthenticatorType": "client-secret",
+            "secret": "your_client_secret",
+            "redirectUris": [
+                "*"
+            ],
+            "webOrigins": [
+                "*"
+            ],
+            "publicClient": false,
+            "protocol": "openid-connect",
+            "attributes": {
+                "access.token.lifespan": "300"
+            },
+            "fullScopeAllowed": true,
+            "directAccessGrantsEnabled": true,
+            "serviceAccountsEnabled": true,
+            "authorizationServicesEnabled": false,
+            "standardFlowEnabled": true,
+            "implicitFlowEnabled": false,
+            "bearerOnly": false
+        }
+    ],
+    "roles": {
+        "realm": [
+            {
+                "name": "user",
+                "description": "Usuário padrão",
+                "composite": false,
+                "clientRole": false
+            },
+            {
+                "name": "admin",
+                "description": "Administrador",
+                "composite": false,
+                "clientRole": false
+            }
+        ]
+    },
+    "users": [
+        {
+            "username": "admin",
+            "email": "admin@fiap.com",
+            "emailVerified": true,
+            "enabled": true,
+            "firstName": "Admin",
+            "lastName": "FIAP",
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "admin123",
+                    "temporary": false
+                }
+            ],
+            "realmRoles": [
+                "admin",
+                "user"
+            ]
+        }
+    ],
+    "userManagedAccessAllowed": false,
+    "attributes": {}
+}
