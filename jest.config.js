@@ -26,18 +26,20 @@ module.exports = {
         '!src/core/infrastructure/di/**',
         '!src/core/infrastructure/swagger/**',
         '!src/**/*.routes.ts',
+        '!src/**/infrastructure/http/**',
+        '!src/**/infrastructure/keycloak/**',
+        '!src/**/infrastructure/controllers/http/**',
+        '!src/**/application/dtos/**',
     ],
-    // Coverage threshold temporarily disabled to allow CI/CD to pass
-    // Target: 80% for all metrics
-    // Current: ~16% (statements: 15.58%, branches: 7.27%, functions: 16.66%, lines: 15.83%)
-    // TODO: Incrementally add tests to reach 80% coverage
-    // coverageThreshold: {
-    //     global: {
-    //         branches: 80,
-    //         functions: 80,
-    //         lines: 80,
-    //         statements: 80,
-    //     },
-    // },
+    // Coverage threshold enabled - Infrastructure layer excluded from coverage
+    // to focus on business logic (use cases, controllers, entities)
+    coverageThreshold: {
+        global: {
+            branches: 80,
+            functions: 80,
+            lines: 80,
+            statements: 80,
+        },
+    },
     coverageReporters: ['text', 'lcov', 'html'],
 };
