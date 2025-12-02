@@ -64,6 +64,17 @@ jobs:
             echo "✅ LCOV coverage report generated"
           fi
 
+      - name: Generate coverage report
+        if: always()
+        uses: ArtiomTr/jest-coverage-report-action@v2
+        with:
+          coverage-file: ./coverage/coverage-summary.json
+          base-coverage-file: ./coverage/coverage-summary.json
+          annotations: none
+          skip-step: install
+          test-script: echo "Tests already run"
+          output: report-markdown
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         if: always()
