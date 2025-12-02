@@ -36,7 +36,7 @@
       "description": "Cliente para autenticação da API de vendas de veículos",
       "enabled": true,
       "clientAuthenticatorType": "client-secret",
-      "secret": "your-client-secret-here",
+      "secret": "your_client_secret",
       "redirectUris": [
         "http://localhost:3001/*",
         "http://localhost:3000/*"
