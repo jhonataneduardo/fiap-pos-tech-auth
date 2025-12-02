@@ -21,6 +21,12 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+# Permissões necessárias para o workflow
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
 jobs:
   # Job 1: Testes automatizados
   test:
