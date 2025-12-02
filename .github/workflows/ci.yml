@@ -62,24 +62,10 @@ jobs:
       - name: Display coverage summary
         if: always()
         run: |
-          echo "📊 Coverage Summary:"
-          if [ -f coverage/lcov-report/index.html ]; then
-            echo "✅ HTML coverage report generated"
-          fi
-          if [ -f coverage/lcov.info ]; then
-            echo "✅ LCOV coverage report generated"
-          fi
-
-      - name: Generate coverage report
-        if: always()
-        uses: ArtiomTr/jest-coverage-report-action@v2
-        with:
-          coverage-file: ./coverage/coverage-summary.json
-          base-coverage-file: ./coverage/coverage-summary.json
-          annotations: none
-          skip-step: install
-          test-script: echo "Tests already run"
-          output: report-markdown
+          echo "📊 Coverage Report Summary"
+          echo "============================="
+          npx jest --ci --coverage --coverageReporters=text-summary --silent || true
+          echo "============================="
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
